@@ -1,0 +1,19 @@
+services:
+  absorb-dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: absorb-dashboard
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - absorb-network
+
+networks:
+  absorb-network:
+    external: true
