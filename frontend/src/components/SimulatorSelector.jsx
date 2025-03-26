@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Card, Alert, Spinner } from 'react-bootstrap';
+import { Form, Alert, Spinner } from 'react-bootstrap';
 import api from '../services/api';
 
 const SimulatorSelector = ({ onSelectSimulator, onSelectCourse }) => {
@@ -76,41 +76,39 @@ const SimulatorSelector = ({ onSelectSimulator, onSelectCourse }) => {
   }
   
   return (
-    <Card>
-      <Card.Body>
-        <Card.Title>Seleccionar curso o simulador</Card.Title>
-        <Form>
-          <Form.Group className="mb-3">
-            <Form.Label>Tipo</Form.Label>
-            <Form.Select value={selectedType} onChange={handleTypeChange}>
-              <option value="simulator">Simuladores</option>
-              <option value="course">Todos los cursos</option>
-            </Form.Select>
-          </Form.Group>
-          
-          <Form.Group>
-            <Form.Label>
-              {selectedType === 'simulator' ? 'Seleccionar simulador' : 'Seleccionar curso'}
-            </Form.Label>
-            <Form.Select onChange={handleSelectChange}>
-              <option value="">-- Seleccionar --</option>
-              {selectedType === 'simulator' 
-                ? simulators.map(simulator => (
-                    <option key={simulator.id} value={simulator.id}>
-                      {simulator.name}
-                    </option>
-                  ))
-                : courses.map(course => (
-                    <option key={course.id} value={course.id}>
-                      {course.name}
-                    </option>
-                  ))
-              }
-            </Form.Select>
-          </Form.Group>
-        </Form>
-      </Card.Body>
-    </Card>
+    <>
+      <h2 className="section-title">Seleccionar curso o simulador</h2>
+      <Form>
+        <Form.Group className="mb-3">
+          <Form.Label>Tipo</Form.Label>
+          <Form.Select value={selectedType} onChange={handleTypeChange}>
+            <option value="simulator">Simuladores</option>
+            <option value="course">Todos los cursos</option>
+          </Form.Select>
+        </Form.Group>
+        
+        <Form.Group>
+          <Form.Label>
+            {selectedType === 'simulator' ? 'Seleccionar simulador' : 'Seleccionar curso'}
+          </Form.Label>
+          <Form.Select onChange={handleSelectChange}>
+            <option value="">-- Seleccionar --</option>
+            {selectedType === 'simulator' 
+              ? simulators.map(simulator => (
+                  <option key={simulator.id} value={simulator.id}>
+                    {simulator.name}
+                  </option>
+                ))
+              : courses.map(course => (
+                  <option key={course.id} value={course.id}>
+                    {course.name}
+                  </option>
+                ))
+            }
+          </Form.Select>
+        </Form.Group>
+      </Form>
+    </>
   );
 };
 

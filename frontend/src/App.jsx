@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Container, Row, Col, Card, Alert, Spinner } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { Container, Row, Col, Alert, Spinner } from 'react-bootstrap';
 import SimulatorSelector from './components/SimulatorSelector';
 import UserTable from './components/UserTable';
 import Pagination from './components/Pagination';
@@ -7,15 +7,20 @@ import api from './services/api';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
-  const [users, setUsers] = useState([]);
-  const [pagination, setPagination] = useState(null);
+  const [allUsers, setAllUsers] = useState([]); // Todos los usuarios
+  const [displayedUsers, setDisplayedUsers] = useState([]); // Usuarios mostrados en la página actual
+  const [currentPage, setCurrentPage] = useState(1);
   const [selectedEntityId, setSelectedEntityId] = useState(null);
   const [selectedEntityType, setSelectedEntityType] = useState(null);
   const [selectedEntityName, setSelectedEntityName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   
-  const fetchUsers = async (entityId, entityType, page = 1) => {
+  // Definimos el número de usuarios por página
+  const itemsPerPage = 6;
+  
+  // Función para obtener todos los usuarios
+  const fetchAllUsers = async (entityId, entityType) => {
     if (!entityId) return;
     
     setLoading(true);
@@ -25,21 +30,25 @@ function App() {
       let response;
       
       if (entityType === 'simulator') {
-        response = await api.getSimulatorUsers(entityId, page);
+        // Solicitamos un límite grande para obtener todos los usuarios
+        response = await api.getSimulatorUsers(entityId, 1, 100);
       } else {
-        response = await api.getCourseUsers(entityId, page);
+        response = await api.getCourseUsers(entityId, 1, 100);
       }
       
       if (response.success) {
+        // Guardamos todos los usuarios
+        setAllUsers(response.data.users);
+        
+        // Establecemos el nombre de la entidad
         if (entityType === 'simulator') {
-          setUsers(response.data.users);
-          setPagination(response.data.pagination);
           setSelectedEntityName(response.data.simulatorName);
         } else {
-          setUsers(response.data.users);
-          setPagination(response.data.pagination);
           setSelectedEntityName(response.data.courseName);
         }
+        
+        // Reseteamos a la primera página
+        setCurrentPage(1);
       } else {
         setError(response.message || 'Error al obtener usuarios');
       }
@@ -51,39 +60,68 @@ function App() {
     }
   };
   
+  // Efecto para paginar localmente los usuarios
+  useEffect(() => {
+    // Cálculos para la paginación local
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    
+    // Obtener los usuarios para la página actual
+    const usersForCurrentPage = allUsers.slice(startIndex, endIndex);
+    setDisplayedUsers(usersForCurrentPage);
+    
+  }, [allUsers, currentPage, itemsPerPage]);
+  
   const handleSelectSimulator = (simulatorId) => {
     setSelectedEntityId(simulatorId);
     setSelectedEntityType('simulator');
-    fetchUsers(simulatorId, 'simulator');
+    fetchAllUsers(simulatorId, 'simulator');
   };
   
   const handleSelectCourse = (courseId) => {
     setSelectedEntityId(courseId);
     setSelectedEntityType('course');
-    fetchUsers(courseId, 'course');
+    fetchAllUsers(courseId, 'course');
   };
   
   const handlePageChange = (page) => {
-    fetchUsers(selectedEntityId, selectedEntityType, page);
+    setCurrentPage(page);
+  };
+  
+  // Crear objeto de paginación para pasarlo al componente Pagination
+  const createPaginationObject = () => {
+    const totalPages = Math.ceil(allUsers.length / itemsPerPage);
+    
+    return {
+      page: currentPage,
+      totalPages: totalPages,
+      prevPage: currentPage > 1 ? currentPage - 1 : null,
+      nextPage: currentPage < totalPages ? currentPage + 1 : null
+      // Removida la propiedad totalItems
+    };
   };
   
   return (
     <Container fluid className="py-4">
-      <Row className="mb-4">
-        <Col>
-          <h1 className="text-center">Dashboard de Absorb LMS</h1>
-          <p className="text-center text-muted">
-            Visualización de usuarios inscritos en cursos y simuladores
-          </p>
-        </Col>
-      </Row>
+      <div className="absorb-header">
+        <Row>
+          <Col>
+            <h1 className="absorb-title text-center">Dashboard de Absorb LMS</h1>
+            <p className="absorb-subtitle text-center">
+              Visualización de usuarios inscritos en cursos y simuladores
+            </p>
+          </Col>
+        </Row>
+      </div>
       
       <Row className="mb-4">
         <Col md={12} lg={6} className="mx-auto">
-          <SimulatorSelector
-            onSelectSimulator={handleSelectSimulator}
-            onSelectCourse={handleSelectCourse}
-          />
+          <div className="content-section">
+            <SimulatorSelector
+              onSelectSimulator={handleSelectSimulator}
+              onSelectCourse={handleSelectCourse}
+            />
+          </div>
         </Col>
       </Row>
       
@@ -98,41 +136,44 @@ function App() {
       {selectedEntityId && (
         <Row>
           <Col>
-            <Card>
-              <Card.Header as="h5">
+            <div className="content-section">
+              <h2 className="section-title">
                 Usuarios de {selectedEntityType === 'simulator' ? 'Simulador' : 'Curso'}: {selectedEntityName}
-              </Card.Header>
-              <Card.Body>
-                {loading ? (
-                  <div className="text-center my-4">
-                    <Spinner animation="border" role="status">
-                      <span className="visually-hidden">Cargando...</span>
-                    </Spinner>
-                    <p className="mt-2">Cargando usuarios...</p>
-                  </div>
-                ) : (
-                  <>
-                    <UserTable users={users} />
-                    
-                    {pagination && (
-                      <Pagination
-                        pagination={pagination}
-                        onPageChange={handlePageChange}
-                      />
-                    )}
-                    
-                    {users.length === 0 && !loading && (
-                      <Alert variant="info">
-                        No hay usuarios inscritos en este {selectedEntityType === 'simulator' ? 'simulador' : 'curso'}.
-                      </Alert>
-                    )}
-                  </>
-                )}
-              </Card.Body>
-            </Card>
+              </h2>
+              
+              {loading ? (
+                <div className="text-center my-4">
+                  <Spinner animation="border" role="status">
+                    <span className="visually-hidden">Cargando...</span>
+                  </Spinner>
+                  <p className="mt-2">Cargando usuarios...</p>
+                </div>
+              ) : (
+                <>
+                  <UserTable users={displayedUsers} />
+                  
+                  {allUsers.length > itemsPerPage && (
+                    <Pagination
+                      pagination={createPaginationObject()}
+                      onPageChange={handlePageChange}
+                    />
+                  )}
+                  
+                  {allUsers.length === 0 && !loading && (
+                    <Alert variant="info">
+                      No hay usuarios inscritos en este {selectedEntityType === 'simulator' ? 'simulador' : 'curso'}.
+                    </Alert>
+                  )}
+                </>
+              )}
+            </div>
           </Col>
         </Row>
       )}
+      
+      <div className="footer">
+        <p>© 2025 Absorb Dashboard</p>
+      </div>
     </Container>
   );
 }

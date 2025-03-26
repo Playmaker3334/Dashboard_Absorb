@@ -17,69 +17,71 @@ const UserTable = ({ users }) => {
   };
   
   const getStatusBadge = (status, statusText) => {
-    let variant;
+    let badgeClass;
     
     switch (status) {
       case 0:
-        variant = 'secondary'; // Not started
+        badgeClass = 'bg-secondary'; // Not started
         break;
       case 1:
-        variant = 'primary'; // In progress
+        badgeClass = 'bg-primary'; // In progress
         break;
       case 2:
-        variant = 'warning'; // Failed
+        badgeClass = 'bg-warning'; // Failed
         break;
       case 3:
-        variant = 'success'; // Completed
+        badgeClass = 'completed'; // Completed - custom class
         break;
       default:
-        variant = 'info';
+        badgeClass = 'bg-info';
     }
     
-    return <Badge bg={variant}>{statusText || 'Desconocido'}</Badge>;
+    return <Badge className={badgeClass}>{statusText || 'Desconocido'}</Badge>;
   };
   
   return (
-    <div className="table-responsive">
-      <Table striped bordered hover>
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Email</th>
-            <th>Estado</th>
-            <th>Progreso</th>
-            <th>Calificación</th>
-            <th>Fecha de inicio</th>
-            <th>Fecha de finalización</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map(user => (
-            <tr key={user.userId}>
-              <td>{user.fullName}</td>
-              <td>{user.email}</td>
-              <td className="text-center">{getStatusBadge(user.status, user.statusText)}</td>
-              <td>
-                <div className="progress">
-                  <div 
-                    className={`progress-bar ${user.progress === 100 ? 'bg-success' : ''}`}
-                    role="progressbar" 
-                    style={{ width: `${user.progress}%` }}
-                    aria-valuenow={user.progress} 
-                    aria-valuemin="0" 
-                    aria-valuemax="100"
-                  >
-                    {user.progress}%
-                  </div>
-                </div>
-              </td>
-              <td className="text-center">{user.score !== null ? user.score : '-'}</td>
-              <td>{formatDate(user.dateStarted)}</td>
-              <td>{formatDate(user.dateCompleted)}</td>
+    <div className="table-rounded-container">
+      <div className="table-responsive">
+        <Table>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Estado</th>
+              <th>Progreso</th>
+              <th>Calificación</th>
+              <th>Fecha de inicio</th>
+              <th>Fecha de finalización</th>
             </tr>
-          ))}
-        </tbody>
-      </Table>
+          </thead>
+          <tbody>
+            {users.map(user => (
+              <tr key={user.userId}>
+                <td>{user.fullName}</td>
+                <td>{user.email}</td>
+                <td className="text-center">{getStatusBadge(user.status, user.statusText)}</td>
+                <td>
+                  <div className="progress">
+                    <div 
+                      className="progress-bar"
+                      role="progressbar" 
+                      style={{ width: `${user.progress}%` }}
+                      aria-valuenow={user.progress} 
+                      aria-valuemin="0" 
+                      aria-valuemax="100"
+                    >
+                      {user.progress}%
+                    </div>
+                  </div>
+                </td>
+                <td className="text-center">{user.score !== null ? user.score : '-'}</td>
+                <td>{formatDate(user.dateStarted)}</td>
+                <td>{formatDate(user.dateCompleted)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </div>
     </div>
   );
 };

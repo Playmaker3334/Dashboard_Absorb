@@ -1,3 +1,4 @@
+// Pagination.jsx
 import React from 'react';
 import { Pagination as BSPagination } from 'react-bootstrap';
 
@@ -5,9 +6,6 @@ const Pagination = ({ pagination, onPageChange }) => {
   if (!pagination) return null;
   
   const { page, totalPages, prevPage, nextPage } = pagination;
-  
-  // If there's only one page, don't show pagination
-  if (totalPages <= 1) return null;
   
   // Create page items
   const pageItems = [];
@@ -90,11 +88,8 @@ const Pagination = ({ pagination, onPageChange }) => {
   return (
     <div className="d-flex justify-content-center mt-4">
       <BSPagination>{pageItems}</BSPagination>
-      <div className="ms-3 align-self-center">
-        <small className="text-muted">
-          Página {page} de {totalPages} ({pagination.totalItems} usuarios totales)
-        </small>
-      </div>
+      
+      {/* Eliminamos la parte de mostrar usuarios totales */}
     </div>
   );
 };
