@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Alert, Spinner } from 'react-bootstrap';
-import SimulatorSelector from './components/SimulatorSelector';
+import NavBar from './components/NavBar';
 import UserTable from './components/UserTable';
 import Pagination from './components/Pagination';
 import api from './services/api';
@@ -97,84 +97,68 @@ function App() {
       totalPages: totalPages,
       prevPage: currentPage > 1 ? currentPage - 1 : null,
       nextPage: currentPage < totalPages ? currentPage + 1 : null
-      // Removida la propiedad totalItems
     };
   };
   
   return (
-    <Container fluid className="py-4">
-      <div className="absorb-header">
-        <Row>
-          <Col>
-            <h1 className="absorb-title text-center">Dashboard de Absorb LMS</h1>
-            <p className="absorb-subtitle text-center">
-              Visualización de usuarios inscritos en cursos y simuladores
-            </p>
-          </Col>
-        </Row>
-      </div>
+    <>
+      <NavBar 
+        onSelectSimulator={handleSelectSimulator}
+        onSelectCourse={handleSelectCourse}
+      />
       
-      <Row className="mb-4">
-        <Col md={12} lg={6} className="mx-auto">
-          <div className="content-section">
-            <SimulatorSelector
-              onSelectSimulator={handleSelectSimulator}
-              onSelectCourse={handleSelectCourse}
-            />
-          </div>
-        </Col>
-      </Row>
-      
-      {error && (
-        <Row className="mb-4">
-          <Col>
-            <Alert variant="danger">{error}</Alert>
-          </Col>
-        </Row>
-      )}
-      
-      {selectedEntityId && (
-        <Row>
-          <Col>
-            <div className="content-section">
-              <h2 className="section-title">
-                Usuarios de {selectedEntityType === 'simulator' ? 'Simulador' : 'Curso'}: {selectedEntityName}
-              </h2>
-              
-              {loading ? (
-                <div className="text-center my-4">
-                  <Spinner animation="border" role="status">
-                    <span className="visually-hidden">Cargando...</span>
-                  </Spinner>
-                  <p className="mt-2">Cargando usuarios...</p>
-                </div>
-              ) : (
-                <>
-                  <UserTable users={displayedUsers} />
-                  
-                  {allUsers.length > itemsPerPage && (
-                    <Pagination
-                      pagination={createPaginationObject()}
-                      onPageChange={handlePageChange}
-                    />
-                  )}
-                  
-                  {allUsers.length === 0 && !loading && (
-                    <Alert variant="info">
-                      No hay usuarios inscritos en este {selectedEntityType === 'simulator' ? 'simulador' : 'curso'}.
-                    </Alert>
-                  )}
-                </>
-              )}
-            </div>
-          </Col>
-        </Row>
-      )}
-      
-      <div className="footer">
-        <p>© 2025 Absorb Dashboard</p>
-      </div>
-    </Container>
+      <Container fluid className="py-4">
+        {error && (
+          <Row className="mb-4">
+            <Col>
+              <Alert variant="danger">{error}</Alert>
+            </Col>
+          </Row>
+        )}
+        
+        {selectedEntityId && (
+          <Row>
+            <Col>
+              <div className="content-section">
+                <h2 className="section-title">
+                  Usuarios de {selectedEntityType === 'simulator' ? 'Simulador' : 'Curso'}: {selectedEntityName}
+                </h2>
+                
+                {loading ? (
+                  <div className="text-center my-4">
+                    <Spinner animation="border" role="status">
+                      <span className="visually-hidden">Cargando...</span>
+                    </Spinner>
+                    <p className="mt-2">Cargando usuarios...</p>
+                  </div>
+                ) : (
+                  <>
+                    <UserTable users={displayedUsers} />
+                    
+                    {allUsers.length > itemsPerPage && (
+                      <Pagination
+                        pagination={createPaginationObject()}
+                        onPageChange={handlePageChange}
+                      />
+                    )}
+                    
+                    {allUsers.length === 0 && !loading && (
+                      <Alert variant="info">
+                        No hay usuarios inscritos en este {selectedEntityType === 'simulator' ? 'simulador' : 'curso'}.
+                      </Alert>
+                    )}
+                  </>
+                )}
+              </div>
+            </Col>
+          </Row>
+        )}
+        
+        <div className="footer">
+          <p>© 2025 Absorb Dashboard</p>
+        </div>
+      </Container>
+    </>
   );
 }
 

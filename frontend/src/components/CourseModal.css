@@ -1,0 +1,117 @@
+/* CourseModal.css - Estilos específicos para el modal de cursos */
+
+.course-modal .modal-content {
+    background-color: var(--content-bg);
+    border-radius: 12px;
+    border: none;
+  }
+  
+  .course-modal .modal-header {
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--content-bg);
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+  }
+  
+  .course-modal .modal-title {
+    color: var(--primary-color);
+    font-weight: 600;
+  }
+  
+  .course-modal .items-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .course-modal .item-card {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    padding: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    min-height: 100px;
+    max-height: 160px;
+    overflow: hidden;
+  }
+  
+  .course-modal .item-card:hover {
+    background-color: var(--border-color);
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  }
+  
+  .course-modal .item-title {
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .course-modal .item-description {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .course-modal .pagination-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1rem;
+  }
+  
+  .course-modal .pagination-btn {
+    color: var(--accent-color);
+    padding: 0.25rem 0.5rem;
+  }
+  
+  .course-modal .pagination-btn:hover:not(:disabled) {
+    color: #927963;
+  }
+  
+  .course-modal .pagination-btn:disabled {
+    color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  .course-modal .arrow-icon {
+    font-size: 1.5rem;
+    line-height: 1;
+    color: var(--accent-color);
+  }
+  
+  .course-modal .pagination-btn:disabled .arrow-icon {
+    color: #ccc;
+  }
+  
+  .course-modal .pagination-text {
+    margin: 0 1rem;
+    color: var(--text-color);
+  }
+  
+  /* Para dispositivos móviles */
+  @media (max-width: 768px) {
+    .course-modal .items-grid {
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+    
+    .course-modal .item-title {
+      font-size: 0.9rem;
+    }
+  }
